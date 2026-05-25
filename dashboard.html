@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h4>Welcome back <span id="displayScreen"></span></h4>
+    <div><b>Balance: </b> $<span id="balanceScreen"></span></div>
+    <p id="alertScreen"></p>
+    <hr>
+    <p>Deposit</p>
+    <input type="number" placeholder="Amount" id="depositAmount"><button id="depositAction">Deposit</button>
+    <hr>
+    <p>Withdrawal</p>
+    <input type="number" placeholder="Amount" id="withdrawAmount"><button id="withdrawAction">Withdraw</button>
+    <hr>
+    <button id="logoutUser">Logout</button>
+
+
+    <script type="module">
+        import Bank from "./config.js"
+
+        let myBank = new Bank()
+
+        if(!localStorage.loggedEmail){
+            window.location.href = "./get_started.html"
+        }
+        else{
+            getDashboard()
+        }
+
+        function getDashboard(){
+            let res = myBank.getUser(localStorage.loggedEmail)
+            balanceScreen.innerHTML = res['balance']
+            displayScreen.innerHTML = res['fullname']
+        }
+
+        logoutUser.addEventListener("click", ()=>{
+            localStorage.removeItem('loggedEmail')
+            window.location.href = "./get_started.html"
+        })
+
+
+        depositAction.addEventListener("click", ()=>{
+            let email = localStorage.loggedEmail
+            let res = myBank.deposit(email, parseFloat(depositAmount.value)) 
+            alertScreen.innerHTML = res
+            depositAmount.value = ""
+            getDashboard()
+        })
+
+        withdrawAction.addEventListener("click", ()=>{
+            let email = localStorage.loggedEmail
+            let res = myBank.withdraw(email, parseFloat(withdrawAmount.value)) 
+            alertScreen.innerHTML = res
+            withdrawAmount.value = ""
+            getDashboard()
+        })
+
+    </script>
+</body>
+</html>
