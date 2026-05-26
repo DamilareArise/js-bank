@@ -19,10 +19,14 @@ export default class Bank{
             return 'Email already exist'
         }
 
+        let rand = Math.round(Math.random() * 100000000)
+        let account_no = "20"+rand
+
         let user = {
             fullname,
             email,
             password,
+            account_no,
             balance: 0
         }
 

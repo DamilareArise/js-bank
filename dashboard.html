@@ -8,6 +8,8 @@
 <body>
     <h4>Welcome back <span id="displayScreen"></span></h4>
     <div><b>Balance: </b> $<span id="balanceScreen"></span></div>
+    <div><b>Account No: </b> <span id="numberScreen"></span></div>
+
     <p id="alertScreen"></p>
     <hr>
     <p>Deposit</p>
@@ -35,6 +37,7 @@
             let res = myBank.getUser(localStorage.loggedEmail)
             balanceScreen.innerHTML = res['balance']
             displayScreen.innerHTML = res['fullname']
+            numberScreen.innerHTML = res["account_no"]
         }
 
         logoutUser.addEventListener("click", ()=>{
@@ -47,6 +50,9 @@
             let email = localStorage.loggedEmail
             let res = myBank.deposit(email, parseFloat(depositAmount.value)) 
             alertScreen.innerHTML = res
+            setTimeout(()=>{
+                alertScreen.innerHTML = ""
+            }, 3000)
             depositAmount.value = ""
             getDashboard()
         })
@@ -55,6 +61,9 @@
             let email = localStorage.loggedEmail
             let res = myBank.withdraw(email, parseFloat(withdrawAmount.value)) 
             alertScreen.innerHTML = res
+            setTimeout(()=>{
+                alertScreen.innerHTML = ""
+            }, 3000)
             withdrawAmount.value = ""
             getDashboard()
         })
