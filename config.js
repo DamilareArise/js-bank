@@ -1,9 +1,11 @@
 // MVC  - model, views and controllers
 export default class Bank{
     #database = []
+    #transactions = []
 
     constructor(){
         this.#database = JSON.parse(localStorage.getItem('users')) || []
+        this.#transactions = JSON.parse(localStorage.getItem('transactions')) || []
     }
 
 
@@ -27,7 +29,8 @@ export default class Bank{
             email,
             password,
             account_no,
-            balance: 0
+            balance: 0,
+            pin: null
         }
 
         this.#database.push(user)
@@ -89,7 +92,7 @@ export default class Bank{
             user.balance -= amount
             // update localstorage
             localStorage.users = JSON.stringify(this.#database)
-            
+            this.logTransactions(amount, user.account_no, user.account_no, "debit")
             return 'Transaction successfull'
         }
     }
@@ -107,13 +110,36 @@ export default class Bank{
 
             // update localstorage
             localStorage.users = JSON.stringify(this.#database)
-            
+            this.logTransactions(amount, user.account_no, user.account_no, "credit")
+            return 'Transaction successful'
         }
 
         // this.#balance += amount
-        return 'Transaction successful'
+        return "user not found"
     }
 
+    update_pin(email, pin){
+        if(pin=="" || pin==null){
+            return "Please enter pin"
+        }
+        let user = this.getUser(email)
+        user['pin'] = pin
+        localStorage.users = JSON.stringify(this.#database)
+        return "Pin updated successfully"
+        
+    }
+
+    logTransactions(amount, sender, reciever,  type){
+        let transact = {
+            sender_no: sender,
+            reciever_no: reciever,
+            amount,
+            type,
+            datetime: new Date()
+        }
+        this.#transactions.push(transact)
+        localStorage.transactions = JSON.stringify(this.#transactions)
+    }
 }
 
 

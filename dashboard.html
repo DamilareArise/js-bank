@@ -9,6 +9,11 @@
     <h4>Welcome back <span id="displayScreen"></span></h4>
     <div><b>Balance: </b> $<span id="balanceScreen"></span></div>
     <div><b>Account No: </b> <span id="numberScreen"></span></div>
+    
+    <div id="pinSetup">
+        <input type="text" placeholder="PIN" id="userPin">
+        <button id="setPin">Set pin</button>
+    </div>
 
     <p id="alertScreen"></p>
     <hr>
@@ -38,6 +43,11 @@
             balanceScreen.innerHTML = res['balance']
             displayScreen.innerHTML = res['fullname']
             numberScreen.innerHTML = res["account_no"]
+            if(res['pin'] == null){
+                pinSetup.style.display = "block"
+            }else{
+                pinSetup.style.display = "none"
+            }
         }
 
         logoutUser.addEventListener("click", ()=>{
@@ -66,6 +76,15 @@
             }, 3000)
             withdrawAmount.value = ""
             getDashboard()
+        })
+
+
+        setPin.addEventListener("click", ()=>{
+            let email = localStorage.loggedEmail
+            let res = myBank.update_pin(email, userPin.value)
+            alertScreen.innerHTML = res
+            getDashboard()
+
         })
 
     </script>
