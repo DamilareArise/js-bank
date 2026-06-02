@@ -130,7 +130,9 @@ export default class Bank{
     }
 
     logTransactions(amount, sender, reciever,  type){
+        let txId = "txId-"+ Math.round(Math.random() *100000)
         let transact = {
+            txId,
             sender_no: sender,
             reciever_no: reciever,
             amount,
@@ -140,7 +142,14 @@ export default class Bank{
         this.#transactions.push(transact)
         localStorage.transactions = JSON.stringify(this.#transactions)
     }
+
+    trxHistory(account_no){
+        let history = this.#transactions.filter(trx => trx.sender_no === account_no || trx.reciever_no === account_no)
+
+        return history
+    }
 }
+
 
 
 // export class Transaction{

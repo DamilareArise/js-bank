@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+
+    <style>
+        table {
+            width: 50%;
+            text-align: center;
+            border: 1px solid;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid;
+        }
+    </style>
 </head>
+
 <body>
     <h4>Welcome back <span id="displayScreen"></span></h4>
     <div><b>Balance: </b> $<span id="balanceScreen"></span></div>
     <div><b>Account No: </b> <span id="numberScreen"></span></div>
-    
+
     <div id="pinSetup">
         <input type="text" placeholder="PIN" id="userPin">
         <button id="setPin">Set pin</button>
@@ -23,6 +40,20 @@
     <p>Withdrawal</p>
     <input type="number" placeholder="Amount" id="withdrawAmount"><button id="withdrawAction">Withdraw</button>
     <hr>
+
+    <h3>Transaction History</h3>
+    <table>
+        <thead>
+            <th>ID</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Date & Time</th>
+        </thead>
+        <tbody id="trxScreen">
+
+        </tbody>
+    </table>
+    <hr>
     <button id="logoutUser">Logout</button>
 
 
@@ -31,47 +62,66 @@
 
         let myBank = new Bank()
 
-        if(!localStorage.loggedEmail){
+
+        if (!localStorage.loggedEmail) {
             window.location.href = "./get_started.html"
         }
-        else{
+        else {
             getDashboard()
         }
 
-        function getDashboard(){
+        function getDashboard() {
             let res = myBank.getUser(localStorage.loggedEmail)
             balanceScreen.innerHTML = res['balance']
             displayScreen.innerHTML = res['fullname']
             numberScreen.innerHTML = res["account_no"]
-            if(res['pin'] == null){
+            if (res['pin'] == null) {
                 pinSetup.style.display = "block"
-            }else{
+            } else {
                 pinSetup.style.display = "none"
             }
+
+
+            // load transaction history
+            let trnxs = myBank.trxHistory(res["account_no"])
+            console.log(trnxs);
+
+            trxScreen.innerHTML = ""
+            trnxs.reverse().forEach((trnx) => {
+                let dt = new Date(trnx.datetime)
+                trxScreen.innerHTML += `
+                    <tr>
+                        <td>${trnx.txId}</td>
+                        <td>$${trnx.amount}</td>
+                        <td>${trnx.type}</td>
+                        <td>${dt.toLocaleString()}</td>
+                    </tr>
+                `
+            })
         }
 
-        logoutUser.addEventListener("click", ()=>{
+        logoutUser.addEventListener("click", () => {
             localStorage.removeItem('loggedEmail')
             window.location.href = "./get_started.html"
         })
 
 
-        depositAction.addEventListener("click", ()=>{
+        depositAction.addEventListener("click", () => {
             let email = localStorage.loggedEmail
-            let res = myBank.deposit(email, parseFloat(depositAmount.value)) 
+            let res = myBank.deposit(email, parseFloat(depositAmount.value))
             alertScreen.innerHTML = res
-            setTimeout(()=>{
+            setTimeout(() => {
                 alertScreen.innerHTML = ""
             }, 3000)
             depositAmount.value = ""
             getDashboard()
         })
 
-        withdrawAction.addEventListener("click", ()=>{
+        withdrawAction.addEventListener("click", () => {
             let email = localStorage.loggedEmail
-            let res = myBank.withdraw(email, parseFloat(withdrawAmount.value)) 
+            let res = myBank.withdraw(email, parseFloat(withdrawAmount.value))
             alertScreen.innerHTML = res
-            setTimeout(()=>{
+            setTimeout(() => {
                 alertScreen.innerHTML = ""
             }, 3000)
             withdrawAmount.value = ""
@@ -79,7 +129,7 @@
         })
 
 
-        setPin.addEventListener("click", ()=>{
+        setPin.addEventListener("click", () => {
             let email = localStorage.loggedEmail
             let res = myBank.update_pin(email, userPin.value)
             alertScreen.innerHTML = res
@@ -89,4 +139,5 @@
 
     </script>
 </body>
+
 </html>
